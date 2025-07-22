@@ -1,37 +1,57 @@
-// Importamos la librería de Express
+// Importar librerías
 import express, { Request, Response } from 'express';
+import mongoose from 'mongoose';
+import dotenv from 'dotenv';
 
-// Creamos una instancia de la aplicación Express
+// Cargar variables de entorno del archivo .env
+dotenv.config();
+
+// Crear la app de Express
 const app = express();
+const PORT = process.env.PORT || 4000;
 
-// Definimos el puerto en el que correrá el servidor
-// Usamos el puerto 4000 para no chocar con el de React Native (que usa el 8081)
-const PORT = 4000;
-
-// Middleware para que nuestro servidor entienda JSON
+// Middleware
 app.use(express.json());
 
-// --- Definición de nuestras rutas (API Endpoints) ---
+// --- Conexión a la Base de Datos MongoDB ---
+const mongoUri = process.env.MONGODB_URI;
 
-// Ruta de prueba para asegurarnos de que el servidor funciona
+if (!mongoUri) {
+  console.error('Error: La variable de entorno MONGODB_URI no está definida.');
+  process.exit(1); // Detiene la aplicación si no hay cadena de conexión
+}
+
+mongoose.connect(mongoUri)
+  .then(() => console.log('✅ Conectado a MongoDB Atlas'))
+  .catch((error) => console.error('❌ Error al conectar a MongoDB:', error));
+
+// --- Definición de Modelos (Schemas) ---
+// Un Schema define la estructura de los documentos en una colección
+const granoSchema = new mongoose.Schema({
+  nombre: String,
+  origen: String,
+  notas: String,
+});
+
+const Grano = mongoose.model('Grano', granoSchema);
+
+
+// --- Definición de Rutas (API Endpoints) ---
 app.get('/api', (req: Request, res: Response) => {
-  res.send('¡El servidor del Café de Altura está funcionando!');
+  res.send('¡El servidor del Café de Altura está funcionando y conectado a la BD!');
 });
 
-// Ruta para obtener la lista de granos de café (con datos de ejemplo)
-app.get('/api/granos', (req: Request, res: Response) => {
-  const granosDeCafe = [
-    { id: 1, nombre: 'Arábica', origen: 'Veracruz', notas: 'Avainilladas y chocolatadas.' },
-    { id: 2, nombre: 'Arábica', origen: 'Puebla, Toxtla', notas: 'Fuerte y chocolatado' },
-    { id: 3, nombre: 'Bourbon', origen: 'Puebla, Toxtla', notas: 'Almendras, chocolate y frutos secos' },
-    { id: 4, nombre: 'Caturra', origen: 'Puebla, Toxtla', notas: 'Chocolate' }
-  ];
-  res.json(granosDeCafe);
+// Ruta para obtener todos los granos de café desde la BD
+app.get('/api/granos', async (req: Request, res: Response) => {
+  try {
+    const granos = await Grano.find(); // Busca todos los documentos en la colección 'granos'
+    res.json(granos);
+  } catch (error) {
+    res.status(500).json({ message: 'Error al obtener los granos de café' });
+  }
 });
 
-// --- Fin de las rutas ---
-
-// Ponemos el servidor a escuchar peticiones en el puerto definido
+// --- Iniciar Servidor ---
 app.listen(PORT, () => {
-  console.log(`Servidor corriendo en http://localhost:${PORT}`);
+  console.log(`🚀 Servidor corriendo en http://localhost:${PORT}`);
 });
