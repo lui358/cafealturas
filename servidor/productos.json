@@ -1,0 +1,98 @@
+[
+  {
+    "nombre": "Arabica",
+    "origen": "Toxtla, Puebla",
+    "notas": "Avellana y chocolate",
+    "precios": [
+      {
+        "peso": "250g",
+        "valor": 89.99
+      },
+      {
+        "peso": "500g",
+        "valor": 179.99
+      },
+      {
+        "peso": "1kg",
+        "valor": 319.99
+      }
+    ],
+    "tostados": [
+      "Claro",
+      "Medio",
+      "Medio-Oscuro",
+      "Oscuro"
+    ],
+    "molidos": [
+      "Grano Entero",
+      "Grueso",
+      "Medio",
+      "Fino",
+      "Expresso"
+    ]
+  },
+  {
+    "nombre": "Caturra",
+    "origen": "Coatepec, Veracruz",
+    "notas": "Chocolate",
+    "precios": [
+      {
+        "peso": "250g",
+        "valor": 89.99
+      },
+      {
+        "peso": "500g",
+        "valor": 179.99
+      },
+      {
+        "peso": "1kg",
+        "valor": 319.99
+      }
+    ],
+    "tostados": [
+      "Claro",
+      "Medio",
+      "Medio-Oscuro",
+      "Oscuro"
+    ],
+    "molidos": [
+      "Grano Entero",
+      "Grueso",
+      "Medio",
+      "Fino",
+      "Expresso"
+    ]
+  },
+    {
+    "nombre": "Bourbon",
+    "origen": "Jaltenango, Chipas",
+    "notas": "Caramelo, Chocolate y Vainilla",
+    "precios": [
+      {
+        "peso": "250g",
+        "valor": 89.99
+      },
+      {
+        "peso": "500g",
+        "valor": 179.99
+      },
+      {
+        "peso": "1kg",
+        "valor": 319.99
+      }
+    ],
+    "tostados": [
+      "Claro",
+      "Medio",
+      "Medio-Oscuro",
+      "Oscuro"
+    ],
+    "molidos": [
+      "Grano Entero",
+      "Grueso",
+      "Medio",
+      "Fino",
+      "Expresso"
+    ]
+  }
+]
