@@ -6,6 +6,9 @@ export type RootStackParamList = {
   Cart: undefined;
   Login: undefined;
   Register: undefined;
+  AdminDashboard: undefined; 
+  CrearPedido: undefined;  
+  AdminOrderDetail: { pedidoId: string };
 };
 
 // Exportamos los tipos para cada pantalla para usarlos fácilmente
@@ -14,3 +17,6 @@ export type DetailScreenProps = NativeStackScreenProps<RootStackParamList, 'Deta
 export type CartScreenProps = NativeStackScreenProps<RootStackParamList, 'Cart'>;
 export type LoginScreenProps = NativeStackScreenProps<RootStackParamList, 'Login'>;
 export type RegisterScreenProps = NativeStackScreenProps<RootStackParamList, 'Register'>;
+export type AdminDashboardScreenProps = NativeStackScreenProps<RootStackParamList, 'AdminDashboard'>;
+export type CrearPedidoScreenProps = NativeStackScreenProps<RootStackParamList, 'CrearPedido'>;
+export type AdminOrderDetailScreenProps = NativeStackScreenProps<RootStackParamList, 'AdminOrderDetail'>;

@@ -59,9 +59,83 @@ const usuarioSchema = new mongoose.Schema({
 
 const Usuario = mongoose.model('Usuario', usuarioSchema);
 
+// --- Definición del Modelo de Pedido ---
+const pedidoSchema = new mongoose.Schema({
+  nombreCliente: { type: String, required: true },
+  redSocial: { type: String, enum: ['Facebook', 'Instagram', 'WhatsApp', 'Otro'], required: true },
+  detallePedido: { type: String, required: true },
+  montoTotal: { type: Number, required: true },
+  estado: { 
+    type: String, 
+    // LISTA DE ESTADOS ACTUALIZADA
+    enum: ['Pendiente', 'Pagado', 'En Preparación', 'Listo para Entrega', 'Confirmó Entrega', 'Cerrado', 'Cancelado'], 
+    default: 'Pendiente' 
+  },
+  fechaCreacion: { type: Date, default: Date.now }
+});
+
+const Pedido = mongoose.model('Pedido', pedidoSchema);
+
 // --- Definición de Rutas (API Endpoints) ---
 app.get('/api', (req: Request, res: Response) => {
   res.send('¡El servidor del Café de Altura está funcionando y conectado a la BD!');
+});
+
+// OBTENER TODOS LOS PEDIDOS
+app.get('/api/pedidos', async (req: Request, res: Response) => {
+  try {
+    // Ordenamos por fecha de creación, los más nuevos primero
+    const pedidos = await Pedido.find().sort({ fechaCreacion: -1 }).lean();
+    res.json(pedidos);
+  } catch (error) {
+    res.status(500).json({ message: 'Error al obtener los pedidos.' });
+  }
+});
+// OBTENER UN SOLO PEDIDO POR SU ID
+app.get('/api/pedidos/:id', async (req: Request, res: Response) => {
+  try {
+    const pedido = await Pedido.findById(req.params.id).lean();
+    if (!pedido) {
+      return res.status(404).json({ message: 'Pedido no encontrado' });
+    }
+    res.json(pedido);
+  } catch (error) {
+    res.status(500).json({ message: 'Error al obtener el pedido.' });
+  }
+});
+// CREAR UN NUEVO PEDIDO
+app.post('/api/pedidos', async (req: Request, res: Response) => {
+  try {
+    const { nombreCliente, redSocial, detallePedido, montoTotal } = req.body;
+    const nuevoPedido = new Pedido({
+      nombreCliente,
+      redSocial,
+      detallePedido,
+      montoTotal,
+    });
+    await nuevoPedido.save();
+    res.status(201).json(nuevoPedido);
+  } catch (error) {
+    res.status(500).json({ message: 'Error al crear el pedido.' });
+  }
+});
+
+// ACTUALIZAR EL ESTADO DE UN PEDIDO
+app.put('/api/pedidos/:id/estado', async (req: Request, res: Response) => {
+  try {
+    const { estado } = req.body;
+    const pedido = await Pedido.findById(req.params.id);
+
+    if (pedido) {
+      pedido.estado = estado;
+      await pedido.save();
+      res.json(pedido);
+    } else {
+      res.status(404).json({ message: 'Pedido no encontrado.' });
+    }
+  } catch (error) {
+    res.status(500).json({ message: 'Error al actualizar el estado del pedido.' });
+  }
 });
 
 // Ruta para obtener TODOS los granos de café (para la pantalla de inicio)
