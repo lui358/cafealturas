@@ -9,6 +9,7 @@ export type RootStackParamList = {
   AdminDashboard: undefined; 
   CrearPedido: undefined;  
   AdminOrderDetail: { pedidoId: string };
+  Profile: undefined;
 };
 
 // Exportamos los tipos para cada pantalla para usarlos fácilmente

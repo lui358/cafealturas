@@ -4,9 +4,10 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Ionicons } from '@expo/vector-icons';
 import { useCartStore } from './store/cartStore';
+import { useAuthStore } from './store/authStore';
 import { RootStackParamList } from './types/navigation';
 
-// Importamos todas nuestras pantallas
+// Importamos TODAS las pantallas
 import HomeScreen from './screens/HomeScreen';
 import DetailScreen from './screens/DetailScreen';
 import CartScreen from './screens/CartScreen';
@@ -15,12 +16,12 @@ import RegisterScreen from './screens/RegisterScreen';
 import AdminDashboardScreen from './screens/AdminDashboardScreen';
 import CrearPedidoScreen from './screens/CrearPedidoScreen';
 import AdminOrderDetailScreen from './screens/AdminOrderDetailScreen';
+import ProfileScreen from './screens/ProfileScreen';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 const Tab = createBottomTabNavigator();
 
 // --- NAVEGADORES ANIDADOS ---
-
 function TiendaStack() {
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
@@ -30,16 +31,6 @@ function TiendaStack() {
   );
 }
 
-function CuentaStack() {
-  return (
-    <Stack.Navigator screenOptions={{ headerShown: false }}>
-      <Stack.Screen name="Login" component={LoginScreen} />
-      <Stack.Screen name="Register" component={RegisterScreen} />
-    </Stack.Navigator>
-  );
-}
-
-// Creamos el Stack para el flujo de Administración
 function AdminStack() {
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
@@ -50,13 +41,28 @@ function AdminStack() {
   );
 }
 
+// El Stack de Cuenta ahora es inteligente
+function CuentaStack() {
+  const isLoggedIn = useAuthStore((state) => state.isLoggedIn);
 
+  return (
+    <Stack.Navigator screenOptions={{ headerShown: false }}>
+      {isLoggedIn ? (
+        <Stack.Screen name="Profile" component={ProfileScreen} />
+      ) : (
+        <>
+          <Stack.Screen name="Login" component={LoginScreen} />
+          <Stack.Screen name="Register" component={RegisterScreen} />
+        </>
+      )}
+    </Stack.Navigator>
+  );
+}
 
 // --- NAVEGADOR PRINCIPAL DE PESTAÑAS ---
-
 export default function App() {
-  const items = useCartStore((state) => state.items);
-  const totalItems = items.reduce((total, item) => total + item.cantidad, 0);
+  const totalItems = useCartStore((state) => state.items.reduce((total, item) => total + item.cantidad, 0));
+  const user = useAuthStore((state) => state.user);
 
   return (
     <NavigationContainer>
@@ -80,8 +86,10 @@ export default function App() {
         <Tab.Screen name="Tienda" component={TiendaStack} options={{ title: 'Nuestros Granos de Café' }}/>
         <Tab.Screen name="Carrito" component={CartScreen} options={{ tabBarBadge: totalItems > 0 ? totalItems : undefined, title: 'Mi Carrito' }} />
         <Tab.Screen name="Cuenta" component={CuentaStack} options={{ title: 'Mi Cuenta' }}/>
-        {/* Ahora usamos el AdminStack correctamente */}
-        <Tab.Screen name="Admin" component={AdminStack} options={{ title: 'Admin Panel' }} />
+
+        {user?.rol === 'admin' && (
+          <Tab.Screen name="Admin" component={AdminStack} options={{ title: 'Admin Panel' }} />
+        )}
       </Tab.Navigator>
     </NavigationContainer>
   );

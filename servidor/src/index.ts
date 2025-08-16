@@ -55,6 +55,8 @@ const usuarioSchema = new mongoose.Schema({
   password: { type: String, required: true },
   codigoPostal: { type: String, required: true, default: '' }, // Campo opcional para el envío
   direccion: { type: String, default: '' }, // Campo para el envío
+   rol: { type: String, enum: ['cliente', 'admin'], default: 'cliente'
+  }
 });
 
 const Usuario = mongoose.model('Usuario', usuarioSchema);
@@ -214,7 +216,8 @@ app.post('/api/usuarios/login', async (req: Request, res: Response) => {
     const payload = { id: usuario._id, nombre: usuario.nombre };
     const token = jwt.sign(payload, 'secreto_super_secreto', { expiresIn: '1h' });
 
-    res.json({ token, usuario: { id: usuario._id, nombre: usuario.nombre, email: usuario.email } });
+    res.json({ token, usuario: { id: usuario._id, nombre: usuario.nombre, email: usuario.email, rol: usuario.rol } 
+    });
 
   } catch (error) {
     res.status(500).json({ message: 'Error en el servidor al iniciar sesión.' });
